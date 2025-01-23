@@ -1,0 +1,40 @@
+Mobile automation-
+package org;
+
+import io.appium.java_client.android.AndroidDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.testng.annotations.BeforeClass;
+
+import java.net.URL;
+
+public class Mobiletesting {
+    private AndroidDriver driver;
+
+    @BeforeClass
+    public void setup() throws Exception {
+        DesiredCapabilities caps = new DesiredCapabilities();
+        caps.setCapability("platformName", "Android");
+        caps.setCapability("deviceName", "Android Emulator");
+        caps.setCapability("appPackage", "live.hms.app2");
+        caps.setCapability("appActivity", "com.hms.android.MainActivity");
+        caps.setCapability("noReset", "true");
+
+        driver = new AndroidDriver(new URL("http://localhost:4723/wd/hub"), caps);
+        MobileElement locationAllow = driver.findElementById("com.android.permissioncontroller:id/permission_allow_button");
+        if (locationAllow.isDisplayed()) {
+            locationAllow.click();
+        }
+
+        MobileElement loginButton = driver.findElementByXPath("//android.widget.TextView[@text='Login']");
+        loginButton.click();
+
+        MobileElement phoneNumberField = driver.findElementById("com.flipkart.android:id/phone_input");
+        phoneNumberField.sendKeys("9876543210"); // Replace with test data
+
+        MobileElement continueButton = driver.findElementById("com.flipkart.android:id/submit_btn");
+        continueButton.click();
+        driver.quit();
+
+    }
+  
+    }
