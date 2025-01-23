@@ -1,0 +1,64 @@
+Api Automation-
+package org;
+
+import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
+import org.testng.annotations.Test;
+
+import java.util.HashMap;
+
+public class Apipractice5 {
+    String token;
+
+    @Test
+    public void gettoken() {
+        RestAssured.baseURI = "https://restful-booker.herokuapp.com";
+        RequestSpecification req = RestAssured.given().headers("Content-Type", "application/json");
+        HashMap<String, String> hm = new HashMap<>();
+        hm.put("username", "admin");
+        hm.put("password", "password123");
+        req.body(hm);
+        Response res = req.post("/auth");
+        System.out.println(res.asString());
+        JsonPath js = res.jsonPath();
+        token = js.getString("token");
+    }
+
+    @Test(dependsOnMethods = "gettoken")
+    public void getbookingid() {
+        RestAssured.baseURI = "https://restful-booker.herokuapp.com";
+        RequestSpecification req = RestAssured.given().headers("authorization", "Bearer" + token);
+        Response res = req.get("/booking");
+        System.out.println(res.prettyPrint());
+    }
+
+    @Test(dependsOnMethods = "gettoken")
+    public void createbooking() {
+        RestAssured.baseURI = "https://restful-booker.herokuapp.com";
+        RequestSpecification req = RestAssured.given().headers("Content-Type", "application/json")
+                .headers("Cookie", "token=" + token)
+                .headers("Authorization", "Bearer" + token);
+
+        HashMap<String, Object> hm = new HashMap<>();
+        hm.put("firstname", "Jim");
+        hm.put("lastname", "Brown");
+        hm.put("totalprice", 111);
+        hm.put("depositpaid", true);
+
+        HashMap<String, String> bookingdates = new HashMap<>();
+        hm.put("checkin", "2018-01-01");
+        hm.put("checkout", "2019-01-01");
+
+        hm.put("bookingdates", bookingdates);
+        hm.put("additionalneeds", "Breakfast");
+
+        req.body(hm);
+        Response res = req.post("/booking");
+        System.out.println(res.prettyPrint());
+
+    }
+
+
+}
